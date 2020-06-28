@@ -1,4 +1,6 @@
 import cv2
+import filters
+
 from managers import WindowManager, CaptureManager
 
 class Camera(object):
@@ -11,12 +13,16 @@ class Camera(object):
                 self._windowManager,
                 True
                 )
+        self._curveFilter = filters.BGRPortraCurveFilter()
 
     def run(self):
         self._windowManager.createWindow()
         while self._windowManager.isWindowCreated:
             self._captureManager.enterFrame()
             frame = self._captureManager.frame
+
+            filters.strokeEdges(frame, frame)
+            self._curveFilter.apply(frame, frame)
 
             self._captureManager.exitFrame()
             self._windowManager.processEvents()
